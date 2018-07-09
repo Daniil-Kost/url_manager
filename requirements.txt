@@ -1,0 +1,10 @@
+Django==1.11
+django-crispy-forms==1.6.1
+python-dateutil
+requests
+beautifulsoup4
+Pillow
+flake8
+
+
+
