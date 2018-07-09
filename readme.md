@@ -9,9 +9,22 @@ get some modified text and stats from it.
 
 **Installation**
 1) Open your terminal and setup 
-new virtualenv with following command 
+new virtualenv with the following command 
 (replace virtualenv_name to your custom value): `virtualenv -p python3.6 virtualenv_name`
 
 2) Go to the virtualenv directory: `cd virtualenv_name`
 
 3) Use the following command: `source bin/activate`
+
+4) Clone project from the GiHub: `git clone https://github.com/Daniil-Kost/url_manager.git`
+
+5) Go to the project directory: `cd url_manager`
+
+6) Install requirements: `pip3 install -r requirements.txt`
+
+7) Setup SQLite DataBase with following command: `python manage.py migrate`
+
+**Usage**
+
+1) Run command `python manage.py runserver`
+2) Go to the http://localhost:8000 on your browser
