@@ -24,6 +24,10 @@ new virtualenv with the following command
 
 7) Setup SQLite DataBase with following command: `python manage.py migrate`
 
+8) Add project table to the DB. Run the following command: `python manage.py makemigration`
+
+9) Synchronize last changes in the DB:  `python manage.py migrate`
+
 **Usage**
 
 1) Run command `python manage.py runserver`
