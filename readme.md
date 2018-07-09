@@ -5,7 +5,7 @@ _Developer: Daniil Kostyshak_
 **About:** This is Service when you can post your custom url  and get short url for this address and 
 get some modified text and stats from it.
 
-**Requirements:** Python 3.6 should be installed on you PC
+**Requirements:** Python 3.6 should be installed on your PC
 
 **Installation**
 1) Open your terminal and setup 
@@ -16,7 +16,7 @@ new virtualenv with the following command
 
 3) Use the following command: `source bin/activate`
 
-4) Clone project from the GiHub: `git clone https://github.com/Daniil-Kost/url_manager.git`
+4) Clone project from the GitHub: `git clone https://github.com/Daniil-Kost/url_manager.git`
 
 5) Go to the project directory: `cd url_manager`
 
