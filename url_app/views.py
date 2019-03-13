@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from crispy_forms.bootstrap import FormActions
 from django.http import HttpResponseRedirect
 from url_app.models import MyUrl

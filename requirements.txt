@@ -1,5 +1,5 @@
-Django==1.11
-django-crispy-forms==1.6.1
+Django==2.1
+django-crispy-forms
 python-dateutil
 requests
 beautifulsoup4

@@ -14,23 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import path
 from django.contrib import admin
 from url_app.views import url_get_add, \
     MyUrlUpdateView, MyUrlDeleteView, UrlRedirectView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
-    url(r'^$', url_get_add,
-        name='home'),
+    path('', url_get_add, name='home'),
 
-    url(r'^url/(?P<pk>\d+)/edit/$',
-        MyUrlUpdateView.as_view(),
-        name='url_edit'),
+    path('url/<int:pk>/edit/', MyUrlUpdateView.as_view(), name='url_edit'),
 
-    url(r'^url/(?P<pk>\d+)/delete/$',
-        MyUrlDeleteView.as_view(),
-        name='url_delete'),
+    path('url/<int:pk>/delete/', MyUrlDeleteView.as_view(), name='url_delete'),
 
     url(r'^(?P<slug>[-\w]+)/$', UrlRedirectView.as_view(),
         name='url_redirect'),
