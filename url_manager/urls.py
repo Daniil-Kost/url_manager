@@ -17,27 +17,7 @@ from django.conf.urls import url, include
 from django.urls import path
 from django.contrib import admin
 from url_app.views import url_get_add, \
-    MyUrlUpdateView, MyUrlDeleteView, UrlRedirectView
-from rest_framework import routers, serializers, viewsets
-from url_app.models import MyUrl
-
-
-# Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = MyUrl
-        fields = ('url', 'text', 'short_url', 'clicks', 'create_dttm')
-
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = MyUrl.objects.all()
-    serializer_class = UserSerializer
-
-
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'api/v1/urls', UserViewSet)
+    MyUrlUpdateView, MyUrlDeleteView, UrlRedirectView, MyUrlList
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -48,11 +28,11 @@ urlpatterns = [
 
     path('url/<int:pk>/delete/', MyUrlDeleteView.as_view(), name='url_delete'),
 
+    path('api/v1/urls/', MyUrlList.as_view()),
+
     url(r'^(?P<slug>[-\w]+)/$', UrlRedirectView.as_view(),
         name='url_redirect'),
 
     url(r'^api-auth/', include('rest_framework.urls')),
-
-    url(r'^', include(router.urls)),
 
 ]

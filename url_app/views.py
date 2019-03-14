@@ -13,6 +13,11 @@ from django.http import HttpResponseRedirect
 from url_app.models import MyUrl
 from url_app import util
 from django.shortcuts import redirect
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from url_app.serializer import MyUrlSerializer
 
 
 def url_get_add(request):
@@ -177,3 +182,20 @@ class UrlRedirectView(UpdateView):
         obj.clicks += 1
         obj.save()
         return redirect(obj.url)
+
+
+class MyUrlList(APIView):
+    """
+    List all snippets, or create a new snippet.
+    """
+    def get(self, request, format=None):
+        snippets = MyUrl.objects.all()
+        serializer = MyUrlSerializer(snippets, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = MyUrlSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
