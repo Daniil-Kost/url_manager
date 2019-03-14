@@ -5,6 +5,10 @@ requests
 beautifulsoup4
 Pillow
 flake8
+djangorestframework
+markdown
+django-filter
+shortuuid
 
 
 

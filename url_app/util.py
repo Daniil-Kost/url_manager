@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import string
-import random
+import shortuuid
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
@@ -8,18 +7,7 @@ import re
 
 
 # generate random short url
-def short_url_generator():
-    rand_list = [random.choice(string.digits),
-                 random.choice(string.ascii_uppercase),
-                 random.choice(string.ascii_lowercase),
-                 random.choice(string.ascii_letters)]
-    return "{}{}{}{}{}{}".format(
-        random.choice(string.ascii_lowercase),
-        random.choice(rand_list),
-        random.choice(rand_list),
-        random.choice(rand_list),
-        random.choice(rand_list),
-        random.choice(rand_list))
+short_url_generator = lambda: f"{shortuuid.uuid()[0:8]}"
 
 
 # function for getting text from url
