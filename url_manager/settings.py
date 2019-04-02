@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DEFAULT_DOMAIN = "http://localhost:8000/"
 
 # Application definition
 

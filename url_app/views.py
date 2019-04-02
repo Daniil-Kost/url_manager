@@ -9,108 +9,91 @@ from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from django.urls import reverse, reverse_lazy
 from crispy_forms.bootstrap import FormActions
-from django.http import HttpResponseRedirect
-from url_app.models import MyUrl
+from django.http import HttpResponseRedirect, Http404
+from url_app.models import Url
 from url_app import util
 from django.shortcuts import redirect
-from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from url_app.serializer import MyUrlSerializer
+from django.core.exceptions import ObjectDoesNotExist
+from url_app.serializer import UrlSerializer
+from url_manager.settings import DEFAULT_DOMAIN
 
 
 def url_get_add(request):
-    # was form posted?
     if request.method == "POST":
-        # was form add button clicked?
         if request.POST.get('create_url') is not None:
-            # errors collection
             errors = {}
-
-            # data for MyUrl object
             data = {'long_url': request.POST.get('long_url')}
-
             val = URLValidator()
+
             try:
                 val(data["long_url"])
-                text = util.get_text(data["long_url"])
+                title = util.get_title(data["long_url"])
             except ValidationError:
                 errors['long_url'] = u"Your long URL is invalid"
-                text = ""
+                title = ""
 
             if request.POST.get('short_url') != "":
                 data["short_url"] = request.POST.get('short_url')
-                if 4 > len(data["short_url"]) or len(data["short_url"]) > 6:
-                    errors['short_url'] = "Short URL will be at least"  \
-                                          "4 chars and max 6 chars"
+                if 4 > len(data["short_url"]) or len(data["short_url"]) > 8:
+                    errors['short_url'] = "Short URL will be at least" \
+                                          "4 chars and max 8 chars"
 
-            # save MyUrl
             if not errors and request.POST.get('short_url') == "":
-                my_url = MyUrl(url=data["long_url"],
-                               text=util.edit_text(text),
-                               short_url=util.short_url_generator())
-                my_url.save()
-
-                # redirect to main page
+                url = Url(url=data["long_url"],
+                          title=title,
+                          short_url=f'{DEFAULT_DOMAIN}{util.short_url_generator()}')
+                url.save()
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
-                # save MyUrl
+
             elif not errors and request.POST.get('short_url') != "":
-                my_url = MyUrl(url=data["long_url"],
-                               text=util.edit_text(text),
-                               short_url=data["short_url"])
-                my_url.save()
-
-                # redirect to main page
+                url = Url(url=data["long_url"],
+                          title=title,
+                          short_url=f'{DEFAULT_DOMAIN}{data["short_url"]}')
+                url.save()
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
+
             else:
-                my_urls = MyUrl.objects.all()
-                paginator = Paginator(my_urls, 5)
+                urls = Url.objects.all()
+                paginator = Paginator(urls, 5)
                 page = request.GET.get('page')
                 try:
                     my_urls = paginator.page(page)
                 except PageNotAnInteger:
-                    # If page is not an integer, deliver first page.
                     my_urls = paginator.page(1)
                 except EmptyPage:
-                    # If page is out of range (e.g. 9999),
-                    # deliver last page of results.
                     my_urls = paginator.page(paginator.num_pages)
-                # render form with errors and previous user input
                 return render(request, 'pages/main.html',
                               {'my_urls': my_urls,
                                'errors': errors})
     else:
-        # initial form render
-        my_urls = MyUrl.objects.all()
-        paginator = Paginator(my_urls, 5)
+        urls = Url.objects.all()
+        paginator = Paginator(urls, 5)
         page = request.GET.get('page')
         try:
             my_urls = paginator.page(page)
         except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
             my_urls = paginator.page(1)
         except EmptyPage:
-            # If page is out of range (e.g. 9999),
-            # deliver last page of results.
             my_urls = paginator.page(paginator.num_pages)
-        # render form with errors and previous user input
         return render(request, 'pages/main.html',
                       {'my_urls': my_urls})
 
 
-class MyUrlUpdateForm(ModelForm):
+class UrlUpdateForm(ModelForm):
     class Meta:
-        model = MyUrl
+        model = Url
 
         exclude = ("slug",)
 
     def __init__(self, *args, **kwargs):
-        super(MyUrlUpdateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
 
@@ -136,41 +119,40 @@ class MyUrlUpdateForm(ModelForm):
         self.fields['domain'].widget.attrs = {'disabled': 'disabled'}
 
 
-class MyUrlUpdateView(UpdateView):
-    """docstring for MyUrlUpdateView"""
+class UrlUpdateView(UpdateView):
+    """docstring for UrlUpdateView"""
 
-    model = MyUrl
+    model = Url
     template_name = 'pages/url_edit.html'
 
-    form_class = MyUrlUpdateForm
+    form_class = UrlUpdateForm
 
     success_url = '/'
-    success_message = "MyUrl updated successfully !"
+    success_message = "Url updated successfully !"
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('cancel_button'):
             return HttpResponseRedirect(reverse('home'))
         else:
-            return super(
-                MyUrlUpdateView, self).post(request, *args, **kwargs)
+            return super().post(request, *args, **kwargs)
 
 
-class MyUrlDeleteView(DeleteView):
-    """docstring for MyUrlDeleteView"""
-    model = MyUrl
+class UrlDeleteView(DeleteView):
+    """docstring for UrlDeleteView"""
+    model = Url
     template_name = 'pages/url_delete.html'
 
     success_url = reverse_lazy('home')
-    success_message = "MyUrl successfully deleted !"
+    success_message = "Url successfully deleted !"
 
     def delete(self, request, *args, **kwargs):
-        return super(MyUrlDeleteView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class UrlRedirectView(UpdateView):
     """docstring for UrlRedirectView"""
 
-    model = MyUrl
+    model = Url
     template_name = 'pages/base.html'
 
     exclude = ("",)
@@ -178,7 +160,7 @@ class UrlRedirectView(UpdateView):
     def get(self, request, **kwargs):
         path = request.path
         new_path = path[1:len(path) - 1]
-        obj = MyUrl.objects.get(short_url=new_path)
+        obj = Url.objects.get(short_url=new_path)
         obj.clicks += 1
         obj.save()
         return redirect(obj.url)
@@ -186,16 +168,37 @@ class UrlRedirectView(UpdateView):
 
 class MyUrlList(APIView):
     """
-    List all snippets, or create a new snippet.
+    List of all data with urls, or create a new short url.
     """
-    def get(self, request, format=None):
-        snippets = MyUrl.objects.all()
-        serializer = MyUrlSerializer(snippets, many=True)
+
+    def get(self, request):
+        urls = Url.objects.all()
+        serializer = UrlSerializer(urls, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None):
-        serializer = MyUrlSerializer(data=request.data)
+    def post(self, request):
+        serializer = UrlSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UrlDetail(APIView):
+    """Get or delete selected data by id"""
+
+    def _get_object(self, pk):
+        try:
+            return Url.objects.get(pk=pk)
+        except ObjectDoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        url = self._get_object(pk)
+        serializer = UrlSerializer(url)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        url = self._get_object(pk)
+        url.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

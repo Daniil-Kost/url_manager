@@ -1,34 +1,36 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from datetime import datetime
+from url_manager.settings import DEFAULT_DOMAIN
 
 
 # Create your models here.
-class MyUrl(models.Model):
-    """MyUrl Model"""
+class Url(models.Model):
+    """Url Model"""
 
-    class Meta(object):
+    class Meta:
         """docstring for Meta"""
-        verbose_name = "MyUrl"
-        verbose_name_plural = "MyUrls"
+        verbose_name = "Url"
+        verbose_name_plural = "Urls"
 
     url = models.URLField(
         unique=False,
         verbose_name="URL",
         blank=False)
 
-    text = models.TextField(
+    title = models.CharField(
+        max_length=256,
         blank=True,
         verbose_name="Text")
 
     domain = models.CharField(
-        max_length=128,
+        max_length=96,
         blank=True,
         verbose_name="Domain",
-        default="http://localhost:8000/")
+        default=DEFAULT_DOMAIN)
 
     short_url = models.CharField(
-        max_length=6,
+        max_length=8,
         blank=True,
         unique=True,
         verbose_name="Short URL")
@@ -49,5 +51,4 @@ class MyUrl(models.Model):
         default=datetime.now)
 
     def __str__(self):
-        return "URL: %s. Short url: %s" % (
-            self.url, self.short_url)
+        return f"URL: {self.url}. Short url: {self.short_url}"

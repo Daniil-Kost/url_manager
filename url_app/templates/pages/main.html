@@ -51,7 +51,7 @@
     <tr class="header">
       <th class="num">#</th>
       <th class="name">URL <i class="fa fa-unlink" aria-hidden="true"></i></th>
-      <th class="name">Text <i class="fa fa-text-width" aria-hidden="true"></i></th>
+      <th class="name">Title <i class="fa fa-text-width" aria-hidden="true"></i></th>
       <th class="name">Clicks <i class="fa fa-calculator" aria-hidden="true"></i></th>
       <th class="name">Short url <i class="fa fa-link" aria-hidden="true"></i></th>
       <th class="name">Created <i class="fa fa-star-half-o" aria-hidden="true"></i></th>
@@ -75,7 +75,7 @@
         </td>
 
       	<td>
-         {{ my_url.text }}
+         {{ my_url.title }}
         </td>
 
            <td>
@@ -83,9 +83,9 @@
         </td>
 
         <td>
-            <a href="{{ my_url.domain }}{{ my_url.short_url }}"
+            <a href="{{ my_url.short_url }}"
           title="Go" target="_blank">
-                {{ my_url.domain }}{{ my_url.short_url }}</a>
+                {{ my_url.short_url }}</a>
         </td>
 
         <td>

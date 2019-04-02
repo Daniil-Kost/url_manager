@@ -16,19 +16,29 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.urls import path
 from django.contrib import admin
-from url_app.views import url_get_add, \
-    MyUrlUpdateView, MyUrlDeleteView, UrlRedirectView, MyUrlList
+from url_app.views import (
+    url_get_add,
+    UrlUpdateView,
+    UrlDeleteView,
+    UrlRedirectView,
+    MyUrlList,
+    UrlDetail,
+)
+
+api_version = "api/v1/"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', url_get_add, name='home'),
 
-    path('url/<int:pk>/edit/', MyUrlUpdateView.as_view(), name='url_edit'),
+    path('url/<int:pk>/edit/', UrlUpdateView.as_view(), name='url_edit'),
 
-    path('url/<int:pk>/delete/', MyUrlDeleteView.as_view(), name='url_delete'),
+    path('url/<int:pk>/delete/', UrlDeleteView.as_view(), name='url_delete'),
 
-    path('api/v1/urls/', MyUrlList.as_view()),
+    path(f'{api_version}urls/', MyUrlList.as_view()),
+
+    path(f'{api_version}urls/<int:pk>/', UrlDetail.as_view()),
 
     url(r'^(?P<slug>[-\w]+)/$', UrlRedirectView.as_view(),
         name='url_redirect'),
