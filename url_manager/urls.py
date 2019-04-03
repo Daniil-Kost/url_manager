@@ -21,7 +21,7 @@ from url_app.views import (
     UrlUpdateView,
     UrlDeleteView,
     UrlRedirectView,
-    MyUrlList,
+    UrlList,
     UrlDetail,
 )
 
@@ -36,7 +36,7 @@ urlpatterns = [
 
     path('url/<int:pk>/delete/', UrlDeleteView.as_view(), name='url_delete'),
 
-    path(f'{api_version}urls/', MyUrlList.as_view()),
+    path(f'{api_version}urls/', UrlList.as_view()),
 
     path(f'{api_version}urls/<int:pk>/', UrlDetail.as_view()),
 

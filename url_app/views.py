@@ -166,7 +166,7 @@ class UrlRedirectView(UpdateView):
         return redirect(obj.url)
 
 
-class MyUrlList(APIView):
+class UrlList(APIView):
     """
     List of all data with urls, or create a new short url.
     """

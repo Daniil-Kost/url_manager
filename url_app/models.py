@@ -2,6 +2,29 @@
 from django.db import models
 from datetime import datetime
 from url_manager.settings import DEFAULT_DOMAIN
+from django.contrib.auth.models import User
+
+
+class UserProfile(models.Model):
+    """To keep extra user data"""
+
+    # user mapping
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "Users Profiles"
+
+    slug = models.SlugField(
+        unique=True,
+        default=user)
+
+    urls = models.ManyToManyField('Url',
+                                  verbose_name="Urls",
+                                  blank=True, )
+
+    def __str__(self):
+        return self.user
 
 
 # Create your models here.
