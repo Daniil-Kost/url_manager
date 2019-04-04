@@ -3,6 +3,7 @@ from django.db import models
 from datetime import datetime
 from url_manager.settings import DEFAULT_DOMAIN
 from django.contrib.auth.models import User
+import uuid
 
 
 class UserProfile(models.Model):
@@ -15,16 +16,22 @@ class UserProfile(models.Model):
         verbose_name = "User Profile"
         verbose_name_plural = "Users Profiles"
 
-    slug = models.SlugField(
-        unique=True,
-        default=user)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True)
+
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        verbose_name="User Name")
 
     urls = models.ManyToManyField('Url',
                                   verbose_name="Urls",
                                   blank=True, )
 
     def __str__(self):
-        return self.user
+        return self.name if self.name else str(self.uuid)
 
 
 # Create your models here.

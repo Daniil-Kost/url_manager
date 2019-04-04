@@ -9,6 +9,6 @@ djangorestframework
 markdown
 django-filter
 shortuuid
-
-
+celery
+redis
 
