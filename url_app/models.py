@@ -3,10 +3,11 @@ from django.db import models
 from datetime import datetime
 from url_manager.settings import DEFAULT_DOMAIN
 from django.contrib.auth.models import User
-import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
-class UserProfile(models.Model):
+class Profile(models.Model):
     """To keep extra user data"""
 
     # user mapping
@@ -16,11 +17,6 @@ class UserProfile(models.Model):
         verbose_name = "User Profile"
         verbose_name_plural = "Users Profiles"
 
-    uuid = models.UUIDField(
-        default=uuid.uuid4,
-        editable=False,
-        unique=True)
-
     name = models.CharField(
         max_length=256,
         blank=True,
@@ -28,10 +24,18 @@ class UserProfile(models.Model):
 
     urls = models.ManyToManyField('Url',
                                   verbose_name="Urls",
-                                  blank=True, )
+                                  blank=True,)
 
     def __str__(self):
-        return self.name if self.name else str(self.uuid)
+        return self.name
+
+
+@receiver(post_save, sender=User)
+def update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        p = Profile.objects.create(user=instance, name=instance.username)
+        p.save()
+    instance.profile.save()
 
 
 # Create your models here.

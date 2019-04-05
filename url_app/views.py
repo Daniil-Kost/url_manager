@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.generic import UpdateView, DeleteView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -10,7 +11,7 @@ from crispy_forms.helper import FormHelper
 from django.urls import reverse, reverse_lazy
 from crispy_forms.bootstrap import FormActions
 from django.http import HttpResponseRedirect, Http404
-from url_app.models import Url
+from url_app.models import Url, Profile
 from url_app import util
 from django.shortcuts import redirect
 from rest_framework.views import APIView
@@ -19,9 +20,30 @@ from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 from url_app.serializer import UrlSerializer
 from url_manager.settings import DEFAULT_DOMAIN
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
 
 
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()  # load the profile instance created by the signal
+            user.profile.name = form.cleaned_data.get('username')
+            user.save()
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'pages/signup.html', {'form': form})
+
+
+@login_required(login_url='/login/')
 def url_get_add(request):
+    user = request.user
     if request.method == "POST":
         if request.POST.get('create_url') is not None:
             errors = {}
@@ -46,6 +68,10 @@ def url_get_add(request):
                           title=title,
                           short_url=f'{DEFAULT_DOMAIN}{util.short_url_generator()}')
                 url.save()
+                user_urls = list(user.profile.urls.all)
+                user_urls.append(url)
+                user.profile.urls.set(user_urls)
+                user.save()
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
@@ -55,12 +81,16 @@ def url_get_add(request):
                           title=title,
                           short_url=f'{DEFAULT_DOMAIN}{data["short_url"]}')
                 url.save()
+                user_urls = list(user.profile.urls.all)
+                user_urls.append(url)
+                user.profile.urls.set(user_urls)
+                user.save()
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
 
             else:
-                urls = Url.objects.all()
+                urls = Url.objects.filter(profile=user.profile)
                 paginator = Paginator(urls, 5)
                 page = request.GET.get('page')
                 try:
@@ -73,7 +103,7 @@ def url_get_add(request):
                               {'my_urls': my_urls,
                                'errors': errors})
     else:
-        urls = Url.objects.all()
+        urls = Url.objects.filter(profile=user.profile)
         paginator = Paginator(urls, 5)
         page = request.GET.get('page')
         try:

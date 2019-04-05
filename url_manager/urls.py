@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from url_app.views import (
     url_get_add,
+    signup,
     UrlUpdateView,
     UrlDeleteView,
     UrlRedirectView,
@@ -39,6 +41,11 @@ urlpatterns = [
     path(f'{api_version}urls/', UrlList.as_view()),
 
     path(f'{api_version}urls/<int:pk>/', UrlDetail.as_view()),
+
+    path('signup/', signup, name='signup'),
+
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     url(r'^(?P<slug>[-\w]+)/$', UrlRedirectView.as_view(),
         name='url_redirect'),
