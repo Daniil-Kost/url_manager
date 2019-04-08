@@ -20,6 +20,8 @@ from django.contrib import admin
 from url_app.views import (
     url_get_add,
     signup,
+account_activation_sent,
+activate,
     UrlUpdateView,
     UrlDeleteView,
     UrlRedirectView,
@@ -38,7 +40,7 @@ urlpatterns = [
 
     path('url/<int:pk>/delete/', UrlDeleteView.as_view(), name='url_delete'),
 
-    path(f'{api_version}urls/', UrlList.as_view()),
+    path(f'{api_version}urls/', UrlList.as_view(), name='api_url_list'),
 
     path(f'{api_version}urls/<int:pk>/', UrlDetail.as_view()),
 
@@ -51,5 +53,9 @@ urlpatterns = [
         name='url_redirect'),
 
     url(r'^api-auth/', include('rest_framework.urls')),
+
+    url(r'^account/account_activation_sent/$', account_activation_sent, name='account_activation_sent'),
+    url(r'^account/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        activate, name='activate'),
 
 ]

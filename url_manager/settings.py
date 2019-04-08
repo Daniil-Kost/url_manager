@@ -87,6 +87,15 @@ DATABASES = {
 
 SITE_ID = 1
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+ADMIN_EMAIL = 'lemk@ukr.net'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'studentsdb1111@gmail.com'
+EMAIL_HOST_PASSWORD = 'kynhbquucgwxpsdp'  # this is not password - this is token for access from this app
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

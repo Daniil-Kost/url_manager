@@ -73,6 +73,21 @@ body {
 
     	}
 
+
+    form {
+      float: left;
+      width: 100%;
+
+      background-color: white;
+
+      padding-left:15px;
+      padding-top:15px;
+      padding-bottom:15px;
+
+      color:black;
+     }
+
+
     select {
 		clear:both;
 		margin-top: 10px;
@@ -109,21 +124,9 @@ body {
 		color: black !important; 
 
 	}
-	
-	.form-control {
 
-    	height:50px;
- 		padding-right:5px; 
- 		padding-left:10px; 
- 		width:200px;
-    	border-color:black;
-    	text-align:left;
-    	color: #555;
-    	box-shadow:none;
 
-    	}
-
-	.label {
+	label {
 
     	display: inline;
     	color: #000000;
@@ -135,7 +138,7 @@ body {
 			
 		}
 
-	.field {
+	field {
     	clear:both;
     	text-align:right; 
     	line-height:25px;
@@ -145,12 +148,6 @@ body {
 	.save, .home, .cancel {
 		width: 120px;
 	}
-
-	.del, .del-cancel {
-		width: 120px;
-	}
-
-	.modal {
 
 
 	#footer {
@@ -178,7 +175,10 @@ body {
 
 	<!--Logo -->
 	{% block logo %}
-	<div class="col-xs-12" id ="logo"><h1>Url Service   <i class="fa fa-link" aria-hidden="true"></i></h1></div>
+	<div class="col-xs-9" id ="logo"><h1>Url Service   <i class="fa fa-link" aria-hidden="true"></i></h1></div>
+      {% if user.is_authenticated %}
+      <div class="col-xs-3" id="auth" style="margin-top: 2%"><p>{{ user.username }}
+          <i class="fa fa-user" aria-hidden="true"></i> | <a href="{% url 'logout' %}?next=/">Logout</a></p></div>{% endif %}
 	{% endblock logo %}
 
 	<!-- Groups Seclector -->
@@ -198,6 +198,13 @@ body {
 	  	<a href="{% url 'home' %}">Home</a>
 
 	  	</li>
+
+          <li role ="presentation" {% if request.path == '/api/v1/urls/' %}
+	  	class="active" {% endif %}>
+	  	<a href="{% url 'api_url_list' %}">API Urls List</a>
+
+	  	</li>
+
 
 
 	</ul>

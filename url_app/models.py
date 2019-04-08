@@ -22,6 +22,8 @@ class Profile(models.Model):
         blank=True,
         verbose_name="User Name")
 
+    email_confirmed = models.BooleanField(default=False)
+
     urls = models.ManyToManyField('Url',
                                   verbose_name="Urls",
                                   blank=True,)

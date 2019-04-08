@@ -11,7 +11,7 @@ from crispy_forms.helper import FormHelper
 from django.urls import reverse, reverse_lazy
 from crispy_forms.bootstrap import FormActions
 from django.http import HttpResponseRedirect, Http404
-from url_app.models import Url, Profile
+from url_app.models import Url
 from url_app import util
 from django.shortcuts import redirect
 from rest_framework.views import APIView
@@ -20,24 +20,64 @@ from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 from url_app.serializer import UrlSerializer
 from url_manager.settings import DEFAULT_DOMAIN
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django import forms
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .tokens import account_activation_token
+
+
+
+def account_activation_sent(request):
+    return render(request, 'pages/account_activation_sent.html')
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.profile.email_confirmed = True
+        user.save()
+        login(request, user)
+        return redirect('home')
+    else:
+        return render(request, 'pages/account_activation_invalid.html')
 
 
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
             user.profile.name = form.cleaned_data.get('username')
+            user.is_active = False
             user.save()
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=user.username, password=raw_password)
-            login(request, user)
-            return redirect('home')
+            current_site = get_current_site(request)
+            subject = 'Activate Your MySite Account'
+            message = render_to_string('pages/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                'token': account_activation_token.make_token(user),
+            })
+            user.email_user(subject, message)
+            return redirect('account_activation_sent')
+            # user = authenticate(username=user.username, password=raw_password)
+            # login(request, user)
+            # return redirect('home')
     else:
-        form = UserCreationForm()
+        form = SignUpForm()
     return render(request, 'pages/signup.html', {'form': form})
 
 
@@ -232,3 +272,12 @@ class UrlDetail(APIView):
         url = self._get_object(pk)
         url.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SignUpForm(UserCreationForm):
+
+    email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2',)
