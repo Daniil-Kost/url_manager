@@ -20,7 +20,7 @@ from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 from url_app.serializer import UrlSerializer
 from url_manager.settings import DEFAULT_DOMAIN
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
@@ -29,7 +29,6 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .tokens import account_activation_token
-
 
 
 def account_activation_sent(request):
@@ -62,20 +61,16 @@ def signup(request):
             user.profile.name = form.cleaned_data.get('username')
             user.is_active = False
             user.save()
-            raw_password = form.cleaned_data.get('password1')
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
             message = render_to_string('pages/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                'uuid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                 'token': account_activation_token.make_token(user),
             })
             user.email_user(subject, message)
             return redirect('account_activation_sent')
-            # user = authenticate(username=user.username, password=raw_password)
-            # login(request, user)
-            # return redirect('home')
     else:
         form = SignUpForm()
     return render(request, 'pages/signup.html', {'form': form})
@@ -84,6 +79,8 @@ def signup(request):
 @login_required(login_url='/login/')
 def url_get_add(request):
     user = request.user
+    urls = Url.objects.filter(profile=user.profile)
+    page = request.GET.get('page')
     if request.method == "POST":
         if request.POST.get('create_url') is not None:
             errors = {}
@@ -108,10 +105,7 @@ def url_get_add(request):
                           title=title,
                           short_url=f'{DEFAULT_DOMAIN}{util.short_url_generator()}')
                 url.save()
-                user_urls = list(user.profile.urls.all)
-                user_urls.append(url)
-                user.profile.urls.set(user_urls)
-                user.save()
+                util.save_user_urls(user, url)
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
@@ -121,37 +115,18 @@ def url_get_add(request):
                           title=title,
                           short_url=f'{DEFAULT_DOMAIN}{data["short_url"]}')
                 url.save()
-                user_urls = list(user.profile.urls.all)
-                user_urls.append(url)
-                user.profile.urls.set(user_urls)
-                user.save()
+                util.save_user_urls(user, url)
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
 
             else:
-                urls = Url.objects.filter(profile=user.profile)
-                paginator = Paginator(urls, 5)
-                page = request.GET.get('page')
-                try:
-                    my_urls = paginator.page(page)
-                except PageNotAnInteger:
-                    my_urls = paginator.page(1)
-                except EmptyPage:
-                    my_urls = paginator.page(paginator.num_pages)
+                my_urls = util.paginate(urls, page, 5)
                 return render(request, 'pages/main.html',
                               {'my_urls': my_urls,
                                'errors': errors})
     else:
-        urls = Url.objects.filter(profile=user.profile)
-        paginator = Paginator(urls, 5)
-        page = request.GET.get('page')
-        try:
-            my_urls = paginator.page(page)
-        except PageNotAnInteger:
-            my_urls = paginator.page(1)
-        except EmptyPage:
-            my_urls = paginator.page(paginator.num_pages)
+        my_urls = util.paginate(urls, page, 5)
         return render(request, 'pages/main.html',
                       {'my_urls': my_urls})
 
