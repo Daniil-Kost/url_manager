@@ -5,6 +5,7 @@ from url_manager.settings import DEFAULT_DOMAIN
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import uuid
 
 
 class Profile(models.Model):
@@ -48,6 +49,12 @@ class Url(models.Model):
         """docstring for Meta"""
         verbose_name = "Url"
         verbose_name_plural = "Urls"
+
+    uuid = models.UUIDField(
+        verbose_name="UUID",
+        default=uuid.uuid4,
+        editable=False,
+        primary_key=True)
 
     url = models.URLField(
         unique=False,

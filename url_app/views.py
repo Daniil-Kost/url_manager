@@ -2,7 +2,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.generic import UpdateView, DeleteView
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
@@ -29,6 +28,7 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .tokens import account_activation_token
+from rest_framework.permissions import IsAuthenticated
 
 
 def account_activation_sent(request):
@@ -215,6 +215,7 @@ class UrlList(APIView):
     """
     List of all data with urls, or create a new short url.
     """
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         urls = Url.objects.all()
@@ -231,20 +232,21 @@ class UrlList(APIView):
 
 class UrlDetail(APIView):
     """Get or delete selected data by id"""
+    permission_classes = (IsAuthenticated,)
 
-    def _get_object(self, pk):
+    def _get_object(self, uuid):
         try:
-            return Url.objects.get(pk=pk)
+            return Url.objects.get(uuid=uuid)
         except ObjectDoesNotExist:
             raise Http404
 
-    def get(self, request, pk):
-        url = self._get_object(pk)
+    def get(self, request, uuid):
+        url = self._get_object(uuid)
         serializer = UrlSerializer(url)
         return Response(serializer.data)
 
-    def delete(self, request, pk):
-        url = self._get_object(pk)
+    def delete(self, request, uuid):
+        url = self._get_object(uuid)
         url.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

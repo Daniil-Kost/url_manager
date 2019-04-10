@@ -17,11 +17,12 @@ from django.conf.urls import url, include
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
+from rest_framework.authtoken.views import obtain_auth_token
 from url_app.views import (
     url_get_add,
     signup,
-account_activation_sent,
-activate,
+    account_activation_sent,
+    activate,
     UrlUpdateView,
     UrlDeleteView,
     UrlRedirectView,
@@ -42,19 +43,22 @@ urlpatterns = [
 
     path(f'{api_version}urls/', UrlList.as_view(), name='api_url_list'),
 
-    path(f'{api_version}urls/<int:pk>/', UrlDetail.as_view()),
+    path(f'{api_version}urls/<uuid:uuid>', UrlDetail.as_view()),
 
     path('signup/', signup, name='signup'),
 
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+
+    path('api-auth/', include('rest_framework.urls')),
+
+    path('account/account_activation_sent/', account_activation_sent, name='account_activation_sent'),
+
     url(r'^(?P<slug>[-\w]+)/$', UrlRedirectView.as_view(),
         name='url_redirect'),
 
-    url(r'^api-auth/', include('rest_framework.urls')),
-
-    url(r'^account/account_activation_sent/$', account_activation_sent, name='account_activation_sent'),
     url(r'^account/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         activate, name='activate'),
 
