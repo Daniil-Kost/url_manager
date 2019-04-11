@@ -41,7 +41,7 @@ urlpatterns = [
 
     path('url/<int:pk>/delete/', UrlDeleteView.as_view(), name='url_delete'),
 
-    path(f'{api_version}urls/', UrlList.as_view(), name='api_url_list'),
+    path(f'{api_version}urls', UrlList.as_view(), name='api_url_list'),
 
     path(f'{api_version}urls/<uuid:uuid>', UrlDetail.as_view()),
 

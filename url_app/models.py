@@ -54,7 +54,7 @@ class Url(models.Model):
         verbose_name="UUID",
         default=uuid.uuid4,
         editable=False,
-        primary_key=True)
+        unique=True)
 
     url = models.URLField(
         unique=False,
@@ -73,7 +73,7 @@ class Url(models.Model):
         default=DEFAULT_DOMAIN)
 
     short_url = models.CharField(
-        max_length=8,
+        max_length=256,
         blank=True,
         unique=True,
         verbose_name="Short URL")

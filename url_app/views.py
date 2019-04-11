@@ -218,12 +218,30 @@ class UrlList(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        urls = Url.objects.all()
+        user = request.user
+        urls = Url.objects.filter(profile=user.profile)
         serializer = UrlSerializer(urls, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = UrlSerializer(data=request.data)
+        val = URLValidator()
+        errors = {}
+
+        try:
+            val(serializer["long_url"])
+            title = util.get_title(serializer["long_url"])
+        except ValidationError:
+            serializer['long_url'] = u"Your long URL is invalid"
+            title = ""
+
+        if serializer.get("short_url"):
+            if 4 > len(serializer["short_url"]) or len(serializer["short_url"]) > 8:
+                errors['short_url'] = "Short URL will be at least" \
+                                          "4 chars and max 8 chars"
+        if not serializer.get("short_url"):
+            serializer["short_url"] = f'{DEFAULT_DOMAIN}{util.short_url_generator()}'
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

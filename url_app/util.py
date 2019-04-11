@@ -17,13 +17,13 @@ def get_title(url):
         html = urlopen(url)
     except HTTPError:
         print("This web-page: " + url + " is not defined.")
-        return None
+        return ""
     try:
         soup = BeautifulSoup(html.read(), "html.parser")
         title = soup.find('h1').getText()
     except AttributeError:
         print("Tag was not found")
-        return None
+        return ""
     return title
 
 

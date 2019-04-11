@@ -1,7 +1,6 @@
 Django==2.1
 django-crispy-forms
 python-dateutil
-requests
 beautifulsoup4
 Pillow
 flake8
@@ -9,4 +8,4 @@ djangorestframework
 markdown
 django-filter
 shortuuid
-django-registration
+psycopg2
