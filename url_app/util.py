@@ -4,6 +4,10 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
+from url_manager.settings import DEFAULT_DOMAIN
 
 
 # generate random short url
@@ -43,3 +47,24 @@ def save_user_urls(user, url):
     user_urls.append(url)
     user.profile.urls.set(user_urls)
     user.save()
+
+
+def prepare_url_data(data):
+    val = URLValidator()
+    errors = {}
+    try:
+        val(data["url"])
+        title = get_title(data["url"])
+        data["title"] = title
+    except ValidationError:
+        data['url'] = u"Your long URL is invalid"
+        data["title"] = ""
+
+    if data.get("short_url"):
+        if 4 > len(data["short_url"]) or len(data["short_url"]) > 8:
+            errors['short_url'] = "Short URL will be at least" \
+                                  "4 chars and max 8 chars"
+    if not data.get("short_url") or data.get("short_url") == "":
+        data["short_url"] = f'{DEFAULT_DOMAIN}{short_url_generator()}'
+
+    return data, errors

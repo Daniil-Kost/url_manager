@@ -20,17 +20,17 @@
       {% csrf_token %}
 
       <div class="col-sm-12">
-  <div class="form-group {% if errors.long_url %}has-error{% endif %}">
-      <input type="text" value="{{ request.POST.long_url }}"
-             name="long_url" id="first_name"
+  <div class="form-group {% if errors.url %}has-error{% endif %}">
+      <input type="text" value="{{ request.POST.url }}"
+             name="url" id="url"
              class="form-control" placeholder="Your URL" style="width: 500px;"/>
-      <span class="help-block">{{ errors.long_url }}</span>
+      <span class="help-block">{{ errors.url }}</span>
   </div>
 
   <div class="form-group {% if errors.short_url %}has-error{% endif %}">
 
       <input type="text" value="{{ request.POST.short_url }}"
-             name="short_url" id="first_name"
+             name="short_url" id="short_url"
              class="form-control" placeholder="Your short URL (optional)"/>
       <span class="help-block">{{ errors.short_url }}</span>
   </div>

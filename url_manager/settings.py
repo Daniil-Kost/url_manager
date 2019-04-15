@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'crispy_forms',
-    'url_app',
     'rest_framework',
     'rest_framework.authtoken',
+    'url_app',
 ]
 
 MIDDLEWARE = [
@@ -85,8 +85,6 @@ DATABASES = {
         'PASSWORD': '111111',
         'HOST': 'localhost',
         'PORT': '5432',
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3'),
     }
 }
 

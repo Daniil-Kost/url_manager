@@ -1,24 +1,17 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.generic import UpdateView, DeleteView
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from django.urls import reverse, reverse_lazy
 from crispy_forms.bootstrap import FormActions
 from django.http import HttpResponseRedirect, Http404
-from url_app.models import Url
-from url_app import util
 from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
-from url_app.serializer import UrlSerializer
-from url_manager.settings import DEFAULT_DOMAIN
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -27,8 +20,12 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from .tokens import account_activation_token
 from rest_framework.permissions import IsAuthenticated
+
+from url_app.models import Url
+from url_app import util
+from url_app.serializer import UrlSerializer
+from .tokens import account_activation_token
 
 
 def account_activation_sent(request):
@@ -83,43 +80,16 @@ def url_get_add(request):
     page = request.GET.get('page')
     if request.method == "POST":
         if request.POST.get('create_url') is not None:
-            errors = {}
-            data = {'long_url': request.POST.get('long_url')}
-            val = URLValidator()
-
-            try:
-                val(data["long_url"])
-                title = util.get_title(data["long_url"])
-            except ValidationError:
-                errors['long_url'] = u"Your long URL is invalid"
-                title = ""
-
-            if request.POST.get('short_url') != "":
-                data["short_url"] = request.POST.get('short_url')
-                if 4 > len(data["short_url"]) or len(data["short_url"]) > 8:
-                    errors['short_url'] = "Short URL will be at least" \
-                                          "4 chars and max 8 chars"
-
-            if not errors and request.POST.get('short_url') == "":
-                url = Url(url=data["long_url"],
-                          title=title,
-                          short_url=f'{DEFAULT_DOMAIN}{util.short_url_generator()}')
+            data, errors = util.prepare_url_data(request.POST)
+            if not errors:
+                url = Url(url=data["url"],
+                          title=data["title"],
+                          short_url=data["short_url"])
                 url.save()
                 util.save_user_urls(user, url)
                 return HttpResponseRedirect(
                     '%s?status_message=Url successfully added!' %
                     reverse('home'))
-
-            elif not errors and request.POST.get('short_url') != "":
-                url = Url(url=data["long_url"],
-                          title=title,
-                          short_url=f'{DEFAULT_DOMAIN}{data["short_url"]}')
-                url.save()
-                util.save_user_urls(user, url)
-                return HttpResponseRedirect(
-                    '%s?status_message=Url successfully added!' %
-                    reverse('home'))
-
             else:
                 my_urls = util.paginate(urls, page, 5)
                 return render(request, 'pages/main.html',
@@ -141,37 +111,27 @@ class UrlUpdateForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
-
-        # set from tag attributes
         self.helper.form_action = reverse('url_edit',
                                           kwargs={'pk': kwargs['instance'].id})
         self.helper.form_method = 'POST'
         self.helper.form_class = 'form-horizontal'
-
-        # set form field properties
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.label_class = 'col-sm-4 control label'
         self.helper.field_class = 'col-sm-8'
-
-        # add buttons
         self.helper.layout.append(FormActions(
             Submit('add_button', 'Save',
                    css_class="btn save btn-primary"),
             Submit('cancel_button', 'Cancel',
                    css_class="btn cancel btn-danger"), ))
-
         self.fields['domain'].widget.attrs = {'disabled': 'disabled'}
 
 
 class UrlUpdateView(UpdateView):
     """docstring for UrlUpdateView"""
-
     model = Url
     template_name = 'pages/url_edit.html'
-
     form_class = UrlUpdateForm
-
     success_url = '/'
     success_message = "Url updated successfully !"
 
@@ -186,7 +146,6 @@ class UrlDeleteView(DeleteView):
     """docstring for UrlDeleteView"""
     model = Url
     template_name = 'pages/url_delete.html'
-
     success_url = reverse_lazy('home')
     success_message = "Url successfully deleted !"
 
@@ -196,10 +155,8 @@ class UrlDeleteView(DeleteView):
 
 class UrlRedirectView(UpdateView):
     """docstring for UrlRedirectView"""
-
     model = Url
     template_name = 'pages/base.html'
-
     exclude = ("",)
 
     def get(self, request, **kwargs):
@@ -224,25 +181,8 @@ class UrlList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        data = request.data
-        val = URLValidator()
-        errors = {}
-        try:
-            val(data["url"])
-            title = util.get_title(data["url"])
-            data["title"] = title
-        except ValidationError:
-            data['long_url'] = u"Your long URL is invalid"
-            title = ""
-
-        if data.get("short_url"):
-            if 4 > len(data["short_url"]) or len(data["short_url"]) > 8:
-                errors['short_url'] = "Short URL will be at least" \
-                                      "4 chars and max 8 chars"
-        if not data.get("short_url"):
-            data["short_url"] = f'{DEFAULT_DOMAIN}{util.short_url_generator()}'
-
-        serializer = UrlSerializer(data=request.data)
+        data, errors = util.prepare_url_data(request.data)
+        serializer = UrlSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             url_uuid = dict(serializer.data)["uuid"]
@@ -274,7 +214,6 @@ class UrlDetail(APIView):
 
 
 class SignUpForm(UserCreationForm):
-
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
 
     class Meta:

@@ -33,6 +33,7 @@ from url_app.views import (
 api_version = "api/v1/"
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
 
     path('', url_get_add, name='home'),
@@ -48,6 +49,7 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
 
     path('login/', auth_views.LoginView.as_view(), name='login'),
+
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),

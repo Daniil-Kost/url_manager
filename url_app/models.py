@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from datetime import datetime
-from url_manager.settings import DEFAULT_DOMAIN
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import uuid
 
+from url_manager.settings import DEFAULT_DOMAIN
+
 
 class Profile(models.Model):
     """To keep extra user data"""
-
-    # user mapping
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
@@ -41,7 +39,6 @@ def update_user_profile(sender, instance, created, **kwargs):
     instance.profile.save()
 
 
-# Create your models here.
 class Url(models.Model):
     """Url Model"""
 
