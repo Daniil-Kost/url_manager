@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import shortuuid
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -63,7 +62,7 @@ def prepare_url_data(data):
     if data.get("short_url"):
         if 4 > len(data["short_url"]) or len(data["short_url"]) > 8:
             errors['short_url'] = "Short URL will be at least" \
-                                  "4 chars and max 8 chars"
+                                  " 4 chars and max 8 chars"
     if not data.get("short_url") or data.get("short_url") == "":
         data["short_url"] = f'{DEFAULT_DOMAIN}{short_url_generator()}'
 

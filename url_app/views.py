@@ -80,7 +80,8 @@ def url_get_add(request):
     page = request.GET.get('page')
     if request.method == "POST":
         if request.POST.get('create_url') is not None:
-            data, errors = util.prepare_url_data(request.POST)
+            request_data = {'url': request.POST.get('url'), 'short_url': request.POST.get('short_url')}
+            data, errors = util.prepare_url_data(request_data)
             if not errors:
                 url = Url(url=data["url"],
                           title=data["title"],
