@@ -224,26 +224,30 @@ class UrlList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = UrlSerializer(data=request.data)
+        data = request.data
         val = URLValidator()
         errors = {}
-
         try:
-            val(serializer["long_url"])
-            title = util.get_title(serializer["long_url"])
+            val(data["url"])
+            title = util.get_title(data["url"])
+            data["title"] = title
         except ValidationError:
-            serializer['long_url'] = u"Your long URL is invalid"
+            data['long_url'] = u"Your long URL is invalid"
             title = ""
 
-        if serializer.get("short_url"):
-            if 4 > len(serializer["short_url"]) or len(serializer["short_url"]) > 8:
+        if data.get("short_url"):
+            if 4 > len(data["short_url"]) or len(data["short_url"]) > 8:
                 errors['short_url'] = "Short URL will be at least" \
-                                          "4 chars and max 8 chars"
-        if not serializer.get("short_url"):
-            serializer["short_url"] = f'{DEFAULT_DOMAIN}{util.short_url_generator()}'
+                                      "4 chars and max 8 chars"
+        if not data.get("short_url"):
+            data["short_url"] = f'{DEFAULT_DOMAIN}{util.short_url_generator()}'
 
+        serializer = UrlSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            url_uuid = dict(serializer.data)["uuid"]
+            url = Url.objects.get(uuid=url_uuid)
+            util.save_user_urls(request.user, url)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
