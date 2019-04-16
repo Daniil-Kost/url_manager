@@ -1,4 +1,3 @@
-import shortuuid
 from url_manager.settings import DEFAULT_DOMAIN
 from url_app import util
 
@@ -10,3 +9,6 @@ URLS = [
     ("https://stackoverflow.com/questions/9943504/right-to-left-string-replace-in-python",
      f"{DEFAULT_DOMAIN}{util.short_url_generator()}")
 ]
+
+
+post_success_data = {"url": "https://www.django-rest-framework.org/tutorial/3-class-based-views/"}

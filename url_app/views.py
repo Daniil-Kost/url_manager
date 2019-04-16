@@ -182,6 +182,9 @@ class UrlList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        if not request.data.get("url"):
+            return Response({"error": "Invalid data. Please define 'url' in your request data."},
+                            status=status.HTTP_400_BAD_REQUEST)
         data, errors = util.prepare_url_data(request.data)
         serializer = UrlSerializer(data=data)
         if serializer.is_valid():
