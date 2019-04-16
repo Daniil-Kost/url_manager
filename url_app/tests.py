@@ -52,17 +52,6 @@ class ApiResourcesTests(TestCase):
         self.assertIn("title", response.data)
         self.assertIn(uuid, user_uuids_list)
 
-    def test_post_new_url_success(self):
-        response = self.client.post(f"/{api_version}urls", post_success_data, format='json')
-        uuid = response.data["uuid"]
-        get_response = self.client.get(f"/{api_version}urls", headers=self.headers)
-        user_uuids_list = [resp['uuid'] for resp in get_response.data]
-        self.assertEqual(201, response.status_code)
-        self.assertIn("short_url", response.data)
-        self.assertIn("uuid", response.data)
-        self.assertIn("title", response.data)
-        self.assertIn(uuid, user_uuids_list)
-
     def test_post_new_url_failed_with_invalid_data(self):
         response = self.client.post(f"/{api_version}urls", {}, format='json')
         self.assertEqual(400, response.status_code)
