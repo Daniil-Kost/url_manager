@@ -58,3 +58,19 @@ class ApiResourcesTests(TestCase):
         self.assertIn("error", response.data)
         self.assertEqual(response.data["error"], "Invalid data. Please define 'url' in your request data.")
 
+    def test_get_url_by_uuid_success(self):
+        uuid = self.urls[0].uuid
+        response = self.client.get(f"/{api_version}urls/{uuid}", headers=self.headers)
+        data = dict(response.data)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(data["uuid"], str(uuid))
+        self.assertIn("short_url", data)
+        self.assertIn("title", data)
+        self.assertIn("url", data)
+
+    def test_delete_url_success(self):
+        uuid = self.urls[0].uuid
+        response = self.client.delete(f"/{api_version}urls/{uuid}", headers=self.headers)
+        get_response = self.client.get(f"/{api_version}urls/{uuid}", headers=self.headers)
+        self.assertEqual(204, response.status_code)
+        self.assertEqual(404, get_response.status_code)
