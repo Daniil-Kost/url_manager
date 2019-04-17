@@ -1,25 +1,25 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.views.generic import UpdateView, DeleteView
-from django.forms import ModelForm
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
-from django.urls import reverse, reverse_lazy
 from crispy_forms.bootstrap import FormActions
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django import forms
+from django.contrib.auth import login
+from django.views.generic import UpdateView, DeleteView
+from django.forms import ModelForm
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django import forms
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from url_app.models import Url

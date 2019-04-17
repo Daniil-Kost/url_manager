@@ -1,10 +1,10 @@
 import shortuuid
-from urllib.request import urlopen
-from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 from url_manager.settings import DEFAULT_DOMAIN
 

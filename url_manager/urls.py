@@ -18,6 +18,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from rest_framework.authtoken.views import obtain_auth_token
+
 from url_app.views import (
     url_get_add,
     signup,

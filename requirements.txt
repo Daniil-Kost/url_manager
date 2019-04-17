@@ -9,4 +9,3 @@ markdown
 django-filter
 shortuuid
 psycopg2
-requests

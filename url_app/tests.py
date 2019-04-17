@@ -1,6 +1,6 @@
 from django.test import TestCase
-from rest_framework.test import APIClient
 from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 
 from url_manager.urls import api_version
 from url_app.models import Url
