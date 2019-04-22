@@ -4,7 +4,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from urllib.request import urlopen
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 from url_manager.settings import DEFAULT_DOMAIN
 
@@ -18,7 +18,7 @@ def short_url_generator():
 def get_title(url):
     try:
         html = urlopen(url)
-    except HTTPError:
+    except (HTTPError, URLError):
         print("This web-page: " + url + " is not defined.")
         return ""
     try:

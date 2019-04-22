@@ -70,7 +70,7 @@ class Url(models.Model):
         default=DEFAULT_DOMAIN)
 
     short_url = models.CharField(
-        max_length=256,
+        max_length=255,
         blank=True,
         unique=True,
         verbose_name="Short URL")

@@ -7,7 +7,7 @@
 <head>
 
   <meta charset="UTF-8"/>
-  
+
   <title>Url Service- {% block meta_title %}{% endblock meta_title %}</title>
 
   <meta name="description" value="Music Catalog Service" />
@@ -24,7 +24,7 @@
 
   <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.0.0/css/bootstrap-datetimepicker.min.css">
 
-  <link rel="stylesheet" 
+  <link rel="stylesheet"
   href="{{ PORTAL_URL }}{% static 'css/main.css' %}">
 
 {% block css %}
@@ -37,7 +37,7 @@ body {
 
 
 
-	
+
 	strong {
 	font-size: 16px !important;
 	}
@@ -58,9 +58,9 @@ body {
 	}
 
 	label {
-    	float:left; 
-    	padding-right:10px; 
-    	margin-top: 10px; 
+    	float:left;
+    	padding-right:10px;
+    	margin-top: 10px;
     	margin-bottom: 10px;
 
     	}
@@ -121,7 +121,7 @@ body {
 	}
 
 	.modal-title {
-		color: black !important; 
+		color: black !important;
 
 	}
 
@@ -135,12 +135,12 @@ body {
     	line-height: 2;
     	text-align: right;
     	white-space: nowrap;
-			
+
 		}
 
 	field {
     	clear:both;
-    	text-align:right; 
+    	text-align:right;
     	line-height:25px;
 
     	}
@@ -153,7 +153,7 @@ body {
 	#footer {
 
 	border-top: 3px solid #428bca;
-	padding-top: 10px; 
+	padding-top: 10px;
 	padding-left: 10px;
 	margin-bottom: 15px;
 	}
@@ -182,10 +182,10 @@ body {
 	{% endblock logo %}
 
 	<!-- Groups Seclector -->
-	
+
   </div>
   <!-- End Header -->
-	
+
   <!-- Start SubHeader -->
   <div class="row" id ="sub-header">
   {% block menu %}
@@ -199,16 +199,9 @@ body {
 
 	  	</li>
 
-          <li role ="presentation" {% if request.path == '/api/v1/urls/' %}
-	  	class="active" {% endif %}>
-	  	<a href="{% url 'api_url_list' %}">API Urls List</a>
-
-	  	</li>
-
-
 
 	</ul>
-				
+
 
 	</div>
 	{% endblock menu %}
@@ -218,7 +211,7 @@ body {
 
   <!-- Start Main Page Content -->
   <div class="row" id ="content-columns">
-		
+
 	<div class="col-xs-12" id="content-column">
 
 		<h2>{% block title %}{% endblock title %}</h2>
@@ -236,17 +229,17 @@ body {
   <!-- Start Footer -->
   <div class="row" id ="footer">
 	<div class="col-xs-4">
-		<p>&copy; 2018 URL Service </p>
+		<p>&copy; 2019 URL Service </p>
 	</div>
 	<div class="col-xs-4">
-		<a href="http://lemk.site"> Developed by Daniil Kostyshak</a>
+		<a href="https://www.facebook.com/lemk.ua"> Developed by Daniil Kostyshak</a>
 	</div>
 	<div class="col-xs-4">
-		<a href="https://github.com/Daniil-Kost/"><i class="fa fa-github" aria-hidden="true"></i>View at GitHub</a>
+		<a href="https://github.com/Daniil-Kost/url_manager"><i class="fa fa-github" aria-hidden="true"></i>View at GitHub</a>
 	</div>
   </div>
   <!-- End Footer -->
-	
+
 </div>
 <!-- End Container -->
 
@@ -255,15 +248,15 @@ body {
 	<!-- Javascript section -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js">
-	
+
 </script>
 
 <script src ="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js">
-	
+
 </script>
 
 <script src ="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js">
-	
+
 </script>
 
 <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.0.0/js/bootstrap-datetimepicker.min.js">
@@ -275,11 +268,11 @@ body {
 </script>
 
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js">
-	
+
 </script>
 
 <script src ="{% static 'js/main.js' %}">
-	
+
 </script>
 
 

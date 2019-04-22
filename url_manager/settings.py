@@ -80,12 +80,12 @@ WSGI_APPLICATION = 'url_manager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'urls_database',
-        'USER': os.environ.get('DB_USER', DB_USER),
-        'PASSWORD': os.environ.get('DB_PASSWORD', DB_PASSWORD),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dkosty$urls_database',
+        'USER': os.environ.get('DEFAULT_DOMAIN', DB_USER),
+        'PASSWORD': os.environ.get('DEFAULT_DOMAIN', DB_PASSWORD),
+        'HOST': 'dkosty.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
     }
 }
 
