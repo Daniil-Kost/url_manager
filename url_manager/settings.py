@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from .secrets import DJANGO_SECRET_KEY, DB_PASSWORD, DB_USER, DEFAULT_DOMAIN_APP
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,14 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
-DEFAULT_DOMAIN = os.environ.get('DEFAULT_DOMAIN', "http://localhost:8000/")
+DEFAULT_DOMAIN = os.environ.get('DEFAULT_DOMAIN', DEFAULT_DOMAIN_APP)
 
 # Application definition
 
@@ -81,8 +82,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'urls_database',
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'USER': os.environ.get('DB_USER', DB_USER),
+        'PASSWORD': os.environ.get('DB_PASSWORD', DB_PASSWORD),
         'HOST': 'localhost',
         'PORT': '5432',
     }
